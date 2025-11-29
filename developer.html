@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GYM Admin Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url('/assets/images/admin_login_background1.jpg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 30px;
+    }
+
+    #loginForm {
+      display: block;
+      width: 100%;
+    }
+
+    table {
+      margin: 100px auto;
+      border-radius: 25px;
+      border: 7px solid rgb(145, 104, 104);
+      font-size: 25px;
+      color: white;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+    }
+
+    input[type="text"], input[type="password"] {
+      height: 32px;
+      width: 270px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      border-bottom: 3px solid white;
+      color: white;
+      font-size: 25px;
+    }
+
+    input::placeholder {
+      font-size: 20px;
+      color: white;
+    }
+
+    #btn {
+      height: 30px;
+      width: 230px;
+      background-color: orange;
+      font-size: 20px;
+      cursor: pointer;
+      border: none;
+      color: black;
+    }
+
+    .toggle-eye {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      font-size: 22px;
+      color: white;
+      cursor: pointer;
+    }
+
+    #error-message {
+      text-align: center;
+      color: red;
+      margin-top: 10px;
+      font-size: 18px;
+      display: none;
+    }
+  </style>
+
+  <link rel="icon" type="image/png" href="/assets/images/deltalogo.png">
+</head>
+<body>
+
+  <!-- LOGIN FORM -->
+  <div id="loginForm">
+    <form>
+      <table>
+        <tr>
+          <td colspan="2" align="center">
+            <img src="/assets/images/admin_logo.png" width="50%">
+          </td>
+        </tr>
+        <tr>
+          <td align="center">
+            <input autocomplete="off" type="text" id="email" placeholder="Username">
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="position: relative;">
+            <input type="password" id="password" placeholder="Password">
+            <span class="toggle-eye" onclick="togglePassword()">👁️</span>
+          </td>
+        </tr>
+        <tr>
+          <td align="center">
+            <input type="submit" value="Login" id="btn">
+          </td>
+        </tr>
+      </table>
+    </form>
+    <div id="error-message"></div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const loginForm = document.querySelector("form");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const errorMessage = document.getElementById("error-message");
+
+      const validEmail = "admin@delta.com";
+      const validPassword = "delta123";
+
+      loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const enteredEmail = emailInput.value.trim();
+        const enteredPassword = passwordInput.value.trim();
+
+        if (enteredEmail === validEmail && enteredPassword === validPassword) {
+          errorMessage.style.display = "none";
+
+          // ✅ Redirect after successful login
+          window.location.href = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSc7d5YGTNbOV2YsF6nuMrI9IBSQEK0lZQGw9OYqY3hYYj-gnQZZ5_5qqcW4VedO2bLFUZWZJJIrqOA/pubhtml?gid=0&single=true";
+        } else {
+          errorMessage.style.display = "block";
+          errorMessage.textContent = "Invalid email or password!";
+        }
+      });
+
+      window.togglePassword = function () {
+        const type = passwordInput.getAttribute("type");
+        passwordInput.setAttribute("type", type === "password" ? "text" : "password");
+      };
+    });
+  </script>
+
+</body>
+</html>

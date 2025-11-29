@@ -1,0 +1,111 @@
+code.gs
+
+const sheetName = 'Customer';
+const scriptProp = PropertiesService.getScriptProperties();
+
+function intialSetup() {
+  const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  scriptProp.setProperty('key', activeSpreadsheet.getId());
+}
+
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+
+  try {
+    const doc = SpreadsheetApp.openById(scriptProp.getProperty('key'));
+    const sheet = doc.getSheetByName(sheetName);
+
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const nextRow = sheet.getLastRow() + 1;
+    const now = new Date();
+
+    const newRow = headers.map(function (header) {
+      if (header === 'Date') {
+        return Utilities.formatDate(now, Session.getScriptTimeZone(), "yyyy-MM-dd");
+      } else if (header === 'Time') {
+        return Utilities.formatDate(now, Session.getScriptTimeZone(), "HH:mm:ss");
+      } else if (header === 'Reply') {
+        return ''; // Leave blank, checkbox will be inserted later
+      } else {
+        return e.parameter[header] || '';
+      }
+    });
+
+    // Write the row
+    sheet.getRange(nextRow, 1, 1, newRow.length).setValues([newRow]);
+
+    // Add checkbox to the "Reply" column
+    const replyIndex = headers.indexOf('Reply') + 1;
+    if (replyIndex > 0) {
+      sheet.getRange(nextRow, replyIndex).insertCheckboxes();
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'success', row: nextRow }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'error', error: err }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function doGet(e){
+    var x = HTMLService.createTemplateFromFile("developer");
+    var y = x.evaluate();
+    var z = z.setXFrameOptionsMode(HtmlServices.XFrameOptionsMode.ALLOWALL);
+    return z;
+}
+
+function getSheetData(){
+    var a = SpreadsheetApp.getActiveSpreadsheet();
+    var b = a.getSheetByName('Customer');
+    var c = b.getDataRange();
+    return c.getValues();
+}
+
+developer.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <centre>
+        <h2>Display Records</h2>
+
+        <table>
+            <?var tableDta = getSheetData();?>
+            <?for(var i = 0; i< tableData.length; i++) { ?>
+
+                <? if(i==0){ ?>
+                    <tr>
+                        <?for(var j = 0; j<tableData[i].length; j++){?>
+                            <th>
+                                <?= tableData[i][j] ?>
+                            </th>
+                            <? } ?>
+                    </tr>
+
+                    <? ] else { ?>
+                        <tr>
+                            <?for(var j = 0; j<tableData[i].length; j++){?>
+                                <td>
+                                    <?= tableData[i][j] ?>
+                                </td>
+                                <? } ?>
+                        </tr>
+                        <? } ?>
+                        <? } ?>
+        </table>
+ 
+
+    </centre>
+</body>
+</html>
